@@ -1,0 +1,60 @@
+% Parameters
+Lx = 10.0;  % Domain size in x-direction
+Ly = 10.0;  % Domain size in y-direction
+Nx = 50;    % Number of grid points in x-direction
+Ny = 50;    % Number of grid points in y-direction
+Dt = 0.001; % Time step
+T_end = 0.001; % End time
+D = 0.01;   % Diffusion coefficient
+U = 1.0;    % Advection velocity in x-direction
+V = 0.5;    % Advection velocity in y-direction
+
+% Spatial grid
+dx = Lx / (Nx - 1);
+dy = Ly / (Ny - 1);
+x = linspace(0, Lx, Nx);
+y = linspace(0, Ly, Ny);
+[X, Y] = meshgrid(x, y);
+
+% Initialize concentration field with a 2D Gaussian distribution
+mu = [Lx/2, Ly/2];         % Mean of the Gaussian
+sigma = [Lx/10, Ly/10];      % Standard deviation of the Gaussian
+c = exp(-((X - mu(1)).^2 / (2 * sigma(1)^2) + (Y - mu(2)).^2 / (2 * sigma(2)^2)));
+
+% Set boundary conditions
+c(:,1) = 0;    % Left boundary
+c(:,end) = 0;  % Right boundary
+c(1,:) = 0;    % Bottom boundary
+c(end,:) = 0;  % Top boundary
+
+% Time-stepping loop
+time = 0;
+while time < T_end
+    % Compute spatial derivatives using central differencing
+    dcdx = (circshift(c, [0, -1]) - 2*c + circshift(c, [0, 1])) / (dx^2);
+    dcdy = (circshift(c, [-1, 0]) - 2*c + circshift(c, [1, 0])) / (dy^2);
+
+    % Advection term
+    adv_x = U * (circshift(c, [0, -1]) - circshift(c, [0, 1])) / (2 * dx);
+    adv_y = V * (circshift(c, [-1, 0]) - circshift(c, [1, 0])) / (2 * dy);
+
+    % Update concentration using explicit finite difference
+    c = c + Dt * (D * (dcdx + dcdy) - adv_x - adv_y);
+
+    % Set boundary conditions at each time step
+    c(:,1) = 0;    % Left boundary
+    c(:,end) = 0;  % Right boundary
+    c(1,:) = 0;    % Bottom boundary
+    c(end,:) = 0;  % Top boundary
+
+    % Update time
+    time = time + Dt;
+end
+
+% Plot the final concentration field
+figure(2);
+surf(X, Y, c, 'EdgeColor', 'none');
+title('2D Advection-Diffusion Equation');
+xlabel('X-axis');
+ylabel('Y-axis');
+zlabel('Concentration (c)');
