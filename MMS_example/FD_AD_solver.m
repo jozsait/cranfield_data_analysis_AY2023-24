@@ -1,12 +1,12 @@
 % Parameters
-MS = true;
+MS = false;
 
 Lx = 10.0;  % Domain size in x-direction
 Ly = 10.0;  % Domain size in y-direction
-Nx = 20;    % Number of grid points in x-direction
-Ny = 20;    % Number of grid points in y-direction
+Nx = 51;    % Number of grid points in x-direction
+Ny = 51;    % Number of grid points in y-direction
 Dt = 0.001; % Time step
-T_end = 0.005; % End time
+T_end = 2; % End time
 D = 1;   % Diffusion coefficient
 U = 1.0;    % Advection velocity in x-direction
 V = 0.5;    % Advection velocity in y-direction
@@ -69,3 +69,6 @@ xlabel('X-axis');
 ylabel('Y-axis');
 zlabel('Concentration (c)');
 view(2)
+
+disp(max(c,[],'all'))
+disp(time^2)
